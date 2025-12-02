@@ -6,31 +6,38 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/akhturtanvir/jenkins-test-app.git'
+                    url: 'https://github.com/yourusername/your-repo.git'
             }
         }
 
-        stage('Clean old files') {
+        stage('Deploy to Local Server') {
             steps {
+                echo "==== Deploying Website to Local Server ===="
+
                 sh '''
-                    sudo rm -rf /var/www/html/*
+                    TARGET_DIR="/var/www/html/app2"
+
+                    # Create target folder if it doesn't exist
+                    sudo mkdir -p $TARGET_DIR
+
+                    # Copy everything from workspace to server directory
+                    sudo rsync -avz --delete $WORKSPACE/ $TARGET_DIR/
+
+                    # Fix permissions so Apache/Nginx can read files
+                    sudo chown -R www-data:www-data $TARGET_DIR/
+
+                    echo "==== Deployment Completed Successfully ===="
                 '''
             }
         }
-
-        stage('Deploy HTML Files') {
-            steps {
-                sh '''
-                    sudo cp -r * /var/www/html/app2
-                '''
-            }
-        }
-
     }
 
     post {
         success {
-            echo "HTML site deployed successfully on local machine!"
+            echo "🎉 Deployment finished successfully!"
+        }
+        failure {
+            echo "❌ Deployment failed!"
         }
     }
 }
