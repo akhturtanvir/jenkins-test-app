@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-        triggers {
+    triggers {
         pollSCM('H/5 * * * *')   // Poll GitHub every 5 minutes
     }
 
@@ -25,10 +25,10 @@ pipeline {
                     sudo mkdir -p $TARGET_DIR
 
                     # Copy everything from workspace to server directory
-                    sudo rsync -avz --delete $WORKSPACE/ $TARGET_DIR/
+                    sudo rsync -avz --delete "$WORKSPACE/" "$TARGET_DIR/"
 
                     # Fix permissions so Apache/Nginx can read files
-                    sudo chown -R www-data:www-data $TARGET_DIR/
+                    sudo chown -R www-data:www-data "$TARGET_DIR/"
 
                     echo "==== Deployment Completed Successfully ===="
                 '''
